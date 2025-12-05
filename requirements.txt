@@ -1,0 +1,6 @@
+aiogram
+SQLAlchemy
+python-dotenv
+aiomysql
+cryptography
+greenlet
