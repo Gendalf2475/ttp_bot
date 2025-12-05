@@ -1,0 +1,29 @@
+name: Deploy to Server
+
+on:
+  workflow_dispatch:  # Запуск вручную по кнопке
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Connect and Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            # Переходим в папку проекта (замените путь на свой)
+            cd /root/ttp_bot
+            
+            # Обновляем код
+            git pull
+            
+            # Обновляем .env файл из секретов GitHub (чтобы не хранить его на сервере вручную)
+            echo "${{ secrets.ENV_FILE }}" > .env
+            
+            # Пересобираем и перезапускаем
+            docker-compose down
+            docker-compose up -d --build
